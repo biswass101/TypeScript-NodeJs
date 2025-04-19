@@ -1,5 +1,8 @@
-import { IUser } from "../User/user.interface";
-import { UserServices } from "../User/user.service";
+import { IUser } from "../../User/user.interface";
+import { UserServices } from "../../User/user.service";
+import { deleteDoctor } from "../OperateDoctor/admin.controll.doctor";
+import { deletePatient } from "../OperatePatients/admin.controll.patients";
+import { deleteStaff } from "../OperateStuff/admin.controll.stuff";
 import { Admin } from "./admin.model";
 import { AdminServices } from "./admin.service";
 import { Request, Response } from "express";
@@ -134,6 +137,9 @@ const updateAdmin = async(req: Request, res:Response): Promise<any> => {
 export const AdminController = {
     getAllAdmin,
     createAdmin,
-    updateAdmin
+    updateAdmin,
+    deleteDoctor,
+    deletePatient,
+    deleteStaff
 };
   
