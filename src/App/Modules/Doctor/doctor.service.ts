@@ -7,7 +7,6 @@ const getAlldoctorFromDB = async () => {
 };
 
 const getDoctorByEmail = async (email: string) => {
-  // console.log("here");
   const result = await Doctor.findOne({email: email})
   return result;
 }

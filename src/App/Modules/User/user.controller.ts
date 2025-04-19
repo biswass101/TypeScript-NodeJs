@@ -4,7 +4,6 @@ import { UserServices } from "./user.service";
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersFromDB();
-    console.log(result);
     if (!result.length) {
       res.status(404).json({
         success: "false",
@@ -30,7 +29,6 @@ const createUser = async (req: Request, res: Response) => {
     //checking section
     const { email } = req.body;
     const isUserExists = await UserServices.getUserByEmail(email);
-    console.log(isUserExists);
     if (isUserExists) {
       res.status(404).json({
         success: false,
