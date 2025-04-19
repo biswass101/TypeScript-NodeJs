@@ -1,18 +1,13 @@
 import mongoose from "mongoose"
-import { IDoctor } from "./doctor.interface";
-
-const doctorSchema = new mongoose.Schema<IDoctor>({
+import { IPatients } from "./patients.interface";
+const patientsSchema = new mongoose.Schema<IPatients>({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    specialization: {
-        type: String,
-        required: true
-    },
-    availability: {
-        type: Boolean,
+    age: {
+        type: Number,
         required: true
     },
     gender: {
@@ -23,7 +18,11 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
     contactInfo: {
         type: String,
         required: true
+    },
+    address: {
+        type: String,
+        required: true
     }
 })
 
-export const Doctor = mongoose.model<IDoctor>("Doctor", doctorSchema);
+export const Patients = mongoose.model<IPatients>("Patients", patientsSchema);

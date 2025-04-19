@@ -12,6 +12,7 @@ const getUserByEmail = async(email: string) => {
 }
 
 const createUserToDB = async(user: IUser) => {
+    console.log("here");
     const savedUser =  (await User.create(user)).save();
     return savedUser;
 }

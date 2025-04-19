@@ -32,6 +32,15 @@ const userSchema = new mongoose.Schema<IUser>({
     isDeleted: {
         type: Boolean,
         default: false
+    },
+    roleRef: {
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'roleModel'
+    },
+    roleModel: {
+        type: String,
+        required: true,
+        enum: ['Doctor', 'Patient', 'Staff']
     }
 })
 

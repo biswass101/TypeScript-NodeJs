@@ -1,8 +1,8 @@
 import {Types} from 'mongoose'
-export interface IDoctor {
+export interface IPatients {
     user: Types.ObjectId
-    specialization: string
-    availability: boolean
+    age : Number
     gender: "Male" | "Female"
     contactInfo: string
+    address: string
 }

@@ -1,22 +1,23 @@
 import { Request, Response } from "express";
-import { DoctorServices } from "./doctor.service";
-import { UserServices } from "../User/user.service";
+import { Patients } from "./patients.model";
 import { IUser } from "../User/user.interface";
-import { Doctor } from "./doctor.model";
+import { PatientServices } from "./patients.service";
+import { UserServices } from "../User/user.service";
+
 
 //read
-const getAllDoctor = async (req: Request, res: Response) => {
+const getAllPatients = async (req: Request, res: Response) => {
   try {
-    const result = await DoctorServices.getAlldoctorFromDB();
+    const result = await PatientServices.getAllPatientFromDB();
     if (!result.length) {
       res.status(404).json({
         success: "false",
-        message: "Doctors Not Found!",
+        message: "Patients Not Found!",
       });
     } else {
       res.status(200).json({
         success: "true",
-        message: "Doctors Found!",
+        message: "Patients Found!",
         data: result,
       });
     }
@@ -29,24 +30,24 @@ const getAllDoctor = async (req: Request, res: Response) => {
 };
 
 //create
-const createDoctor = async (req: Request, res: Response): Promise<any> => {
+const createPatient = async (req: Request, res: Response): Promise<any> => {
   try {
     const {name, email, password,
       image,
-      specialization,
-      availability,
+      age,
       gender,
-      contactInfo} = req.body;
-    const isDoctorExists = await DoctorServices.getDoctorByEmail(email);
-    if(isDoctorExists) {
+      contactInfo,
+      address} = req.body;
+    const isPatientExists = await PatientServices.getPatientByEmail(email);
+    if(isPatientExists) {
       return res.status(400).json({
         success: false,
-        message: "Doctors Already Exists",
+        message: "Patient Already Exists",
       })
     }
     
     const newUser: IUser = {
-      name, email, password, image, role: "Doctor", status: "in-progress", isDeleted: false, roleModel: "Doctor"
+      name, email, password, image, role: "Patients", status: "in-progress", isDeleted: false, roleModel: "Patients"
     }
 
     const isUserExists = await UserServices.getUserByEmail(email);
@@ -54,7 +55,7 @@ const createDoctor = async (req: Request, res: Response): Promise<any> => {
     if(isUserExists) {
       return res.status(400).json({
         success: false,
-        message: "Doctors Already Exists",
+        message: "Patient Already Exists",
       })
     }
 
@@ -67,24 +68,24 @@ const createDoctor = async (req: Request, res: Response): Promise<any> => {
       })
     }
 
-    const newDoctor = {
+    const newPatient = {
       user: savedUser._id,
-      specialization,
-      availability,
+      age,
       gender,
-      contactInfo
+      contactInfo,
+      address
     }
-    const doctor = await DoctorServices.addDoctorToDB(newDoctor);
-    if (!doctor) {
+    const patient = await PatientServices.addPatientToDB(newPatient);
+    if (!patient) {
       res.status(400).json({
         success: false,
-        message: "Doctors info not saved!",
+        message: "Patient info not saved!",
       });
     } else {
       res.status(201).json({
         success: true,
-        message: "Doctors info saved!",
-        data: doctor,
+        message: "Patient info saved!",
+        data: patient,
       });
     }
   } catch (error) {
@@ -96,31 +97,31 @@ const createDoctor = async (req: Request, res: Response): Promise<any> => {
 };
 
 //Update
-const updateDoctor = async(req: Request, res:Response): Promise<any> => {
+const updatePatients = async(req: Request, res:Response): Promise<any> => {
   try {
     const {id} = req.params;
-    const isDoctorAvailable = await Doctor.findById(id);
-    if(!isDoctorAvailable) {
+    const isPatientAvailable = await Patients.findById(id);
+    if(!isPatientAvailable) {
       return res.status(404).json({
         success: false,
-        message: "Doctor Not Found!",
+        message: "Patient Not Found!",
       });
     }
 
-    const newUpdatedDoctor = await DoctorServices.updateDoctorToDB(id, req.body);
-    if(!newUpdatedDoctor) {
+    const newUpdatedPatient = await PatientServices.updatePatientToDB(id, req.body);
+    if(!newUpdatedPatient) {
       return res.status(400).json({
         success: false,
-        message: "Doctor Not Updated!",
+        message: "Patient Not Updated!",
       });
     }
 
     //todo: master user update
-    // const newDoctorUserUpdate = await
+    // const newPatientUserUpdate = await
 
     res.status(200).json({
       success: true,
-      message: "Doctor Updated!",
+      message: "Patient Updated!",
     });
 
   } catch (error) {
@@ -131,8 +132,8 @@ const updateDoctor = async(req: Request, res:Response): Promise<any> => {
   }
 }
 
-export const DoctorController = {
-  getAllDoctor,
-  createDoctor,
-  updateDoctor
+export const PatientController = {
+  getAllPatients,
+  createPatient,
+  updatePatients
 };
