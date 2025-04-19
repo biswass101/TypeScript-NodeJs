@@ -47,7 +47,7 @@ const createPatient = async (req: Request, res: Response): Promise<any> => {
     }
     
     const newUser: IUser = {
-      name, email, password, image, role: "Patients", status: "in-progress", isDeleted: false, roleModel: "Patients"
+      name, email, password, image, role: "Patients", status: "in-progress", isDeleted: false, roleModel: "Patient"
     }
 
     const isUserExists = await UserServices.getUserByEmail(email);

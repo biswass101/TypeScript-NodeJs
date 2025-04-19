@@ -1,22 +1,22 @@
 import { IUser } from "../User/user.interface";
 import { UserServices } from "../User/user.service";
-import { Staff } from "./staff.model";
-import { StaffServices } from "./staff.service";
+import { Admin } from "./admin.model";
+import { AdminServices } from "./admin.service";
 import { Request, Response } from "express";
 
 //read
-const getAllStaff = async (req: Request, res: Response) => {
+const getAllAdmin = async (req: Request, res: Response) => {
   try {
-    const result = await StaffServices.getAllStaffFromDB();
+    const result = await AdminServices.getAllAdminFromDB();
     if (!result.length) {
       res.status(404).json({
         success: "false",
-        message: "Staffs Not Found!",
+        message: "Admins Not Found!",
       });
     } else {
       res.status(200).json({
         success: "true",
-        message: "Staffs Found!",
+        message: "Admins Found!",
         data: result,
       });
     }
@@ -29,14 +29,14 @@ const getAllStaff = async (req: Request, res: Response) => {
 };
 
 //create
-const createStaff = async (req: Request, res: Response): Promise<any> => {
+const createAdmin = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { name, email, password, image, contactInfo } = req.body;
-    const isStaffExists = await StaffServices.getStaffByEmail(email);
-    if (isStaffExists) {
+    const { name, email, password, image, contactInfo, address } = req.body;
+    const isAdminExists = await AdminServices.getAdminByEmail(email);
+    if (isAdminExists) {
       return res.status(400).json({
         success: false,
-        message: "Staff Already Exists",
+        message: "Admin Already Exists",
       });
     }
 
@@ -45,10 +45,10 @@ const createStaff = async (req: Request, res: Response): Promise<any> => {
       email,
       password,
       image,
-      role: "Staff",
+      role: "Admin",
       status: "in-progress",
       isDeleted: false,
-      roleModel: "Staff",
+      roleModel: "Admin",
     };
 
     const isUserExists = await UserServices.getUserByEmail(email);
@@ -56,7 +56,7 @@ const createStaff = async (req: Request, res: Response): Promise<any> => {
     if (isUserExists) {
       return res.status(400).json({
         success: false,
-        message: "Staff Already Exists",
+        message: "Admin Already Exists",
       });
     }
 
@@ -69,21 +69,22 @@ const createStaff = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const newStaff = {
+    const newAdmin = {
       user: savedUser._id,
       contactInfo,
+      address,
     };
-    const staff = await StaffServices.addStaffToDB(newStaff);
-    if (!staff) {
+    const admin = await AdminServices.addAdminToDB(newAdmin);
+    if (!admin) {
       res.status(400).json({
         success: false,
-        message: "Staff info not saved!",
+        message: "Admin info not saved!",
       });
     } else {
       res.status(201).json({
         success: true,
-        message: "Staff info saved!",
-        data: staff,
+        message: "Admin info saved!",
+        data: admin,
       });
     }
   } catch (error) {
@@ -95,22 +96,22 @@ const createStaff = async (req: Request, res: Response): Promise<any> => {
 };
 
 //Update
-const updateStaff = async(req: Request, res:Response): Promise<any> => {
+const updateAdmin = async(req: Request, res:Response): Promise<any> => {
   try {
     const {id} = req.params;
-    const isStaffAvailable = await Staff.findById(id);
-    if(!isStaffAvailable) {
+    const isAdminAvailable = await Admin.findById(id);
+    if(!isAdminAvailable) {
       return res.status(404).json({
         success: false,
-        message: "Staff Not Found!",
+        message: "Admin Not Found!",
       });
     }
 
-    const newUpdatedStaff = await StaffServices.updateStaffToDB(id, req.body);
-    if(!newUpdatedStaff) {
+    const newUpdatedAdmin = await AdminServices.updateAdminToDB(id, req.body);
+    if(!newUpdatedAdmin) {
       return res.status(400).json({
         success: false,
-        message: "Staff Not Updated!",
+        message: "Admin Not Updated!",
       });
     }
 
@@ -119,7 +120,7 @@ const updateStaff = async(req: Request, res:Response): Promise<any> => {
 
     res.status(200).json({
       success: true,
-      message: "Staff Updated!",
+      message: "Admin Updated!",
     });
 
   } catch (error) {
@@ -130,8 +131,9 @@ const updateStaff = async(req: Request, res:Response): Promise<any> => {
   }
 }
 
-export const StaffController = {
-  getAllStaff,
-  createStaff,
-  updateStaff
+export const AdminController = {
+    getAllAdmin,
+    createAdmin,
+    updateAdmin
 };
+  

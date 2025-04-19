@@ -8,11 +8,6 @@ const staffSchema = new mongoose.Schema<IStaff>({
     required: true,
   },
 
-  careDate: {
-    type: Date,
-    required: true,
-  },
-
   contactInfo: {
     type: String,
     required: true,

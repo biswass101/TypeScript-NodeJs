@@ -10,5 +10,5 @@ export interface IUser {
 
     //Relation
     roleRef?: Types.ObjectId
-    roleModel?: "Admin" | "Doctor" | "Patients" | "Staff"
+    roleModel?: "Admin" | "Doctor" | "Patient" | "Staff"
 }

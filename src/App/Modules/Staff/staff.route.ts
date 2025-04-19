@@ -4,7 +4,7 @@ import { StaffController } from './staff.controller';
 const router = express.Router();
 
 router.get('/', StaffController.getAllStaff);
-router.post('/create-doctor', StaffController.createStaff);
-router.put('/update-doctor/:id', StaffController.updateStaff);
+router.post('/create-staff', StaffController.createStaff);
+router.put('/update-staff/:id', StaffController.updateStaff);
 
 export const StaffRouter = router;

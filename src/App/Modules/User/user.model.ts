@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema<IUser>({
     roleModel: {
         type: String,
         required: true,
-        enum: ['Doctor', 'Patient', 'Staff']
+        enum: ['Admin', 'Doctor', 'Patient', 'Staff']
     }
 })
 
