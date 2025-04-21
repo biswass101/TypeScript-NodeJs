@@ -2,10 +2,18 @@ import { Request } from "express";
 import { User } from "./user.model"
 import bycrypt from 'bcrypt'
 import {IUser} from './user.interface'
+import ApiError from "../../utility/AppError";
+import httpStatus from 'http-status'
+import { config } from "../../config/config";
 
 //create
 const createUserToDB = async(req: Request):Promise<any> => {
-    const hashPassword: string = await bycrypt.hash(req.body.password, 12);
+
+    const existingUser = await User.findOne({email: req.body.email});
+
+    if(existingUser) throw new ApiError(httpStatus.CONFLICT, "User Already Exists");
+
+    const hashPassword: string = await bycrypt.hash(req.body.password, Number(config.soltRound));
     const userData: IUser = {
         name: req.body.name,
         email: req.body.email,
@@ -24,12 +32,12 @@ const createUserToDB = async(req: Request):Promise<any> => {
 
 //read
 const getAllUsersFromDB = async() => {
-    const result = await User.find();
+    const result = await User.find({isDeleted: false});
     return result;
 }
 
 const getOneUserFromDB = async(id: string) => {
-    const result = await User.findById(id);
+    const result = await User.findById(id, {isDeleted: false});
     return result
 }
 

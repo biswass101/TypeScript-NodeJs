@@ -32,6 +32,7 @@ const createDoctorToDB = async (req: Request, refId: any) => {
 };
 
 const updateDoctorToDB = async (id: string, payload: Object) => {
+  //find
   const updatedDoctor = await Doctor.findByIdAndUpdate(
     id,
     payload,
