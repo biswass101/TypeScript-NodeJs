@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
-const databas_1 = require("./config/databas");
-const config_1 = require("./config/config");
+const databas_1 = require("./App/config/databas");
+const config_1 = require("./App/config/config");
 const PORT = config_1.config.port;
 (0, databas_1.connectDB)();
 //server

@@ -20,7 +20,7 @@ export const deleteStaff = catchAsync(
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "One Patient Deleted Successfully",
+        message: "One Stuff Deleted Successfully",
         data: findStaffAndDelete,
       });
     }

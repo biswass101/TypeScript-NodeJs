@@ -15,12 +15,12 @@ const createStaffToDB = async (req: Request, refId: any) => {
 
 //read
 const getAllStaffFromDB = async () => {
-  const result = await Staff.find();
+  const result = await Staff.find()
   return result;
 };
 
 const getOneStaffFromDB = async(id: string) => {
-    const result = await Staff.findById(id);
+    const result = await Staff.findById(id)
     return result
 }
 

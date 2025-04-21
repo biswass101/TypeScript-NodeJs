@@ -17,12 +17,12 @@ const createPatientToDB = async (req: Request, refId: any) => {
 };
 
 const getAllPatientFromDB = async () => {
-  const result = await Patients.find();
+  const result = await Patients.find()
   return result;
 };
 
 const getOnePatientFromDB = async(id: string) => {
-    const result = await Patients.findById(id);
+    const result = await Patients.findById(id)
     return result
 }
 
