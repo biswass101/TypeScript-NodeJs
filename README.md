@@ -167,4 +167,4 @@ http://localhost:5000/api/v1
 ---
 
 ## Author
-**Hospital Management System API** by Your Name
+**Hospital Management System API** by Naeem Biswass Niloy
