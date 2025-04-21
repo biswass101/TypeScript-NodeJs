@@ -5,7 +5,6 @@ import { UserServices } from "../../User/user.service";
 import { deleteDoctor } from "../OperateDoctor/admin.controll.doctor";
 import { deletePatient } from "../OperatePatients/admin.controll.patients";
 import { deleteStaff } from "../OperateStuff/admin.controll.stuff";
-import { Admin } from "./admin.model";
 import { AdminServices } from "./admin.service";
 import { Request, RequestHandler, Response } from "express";
 

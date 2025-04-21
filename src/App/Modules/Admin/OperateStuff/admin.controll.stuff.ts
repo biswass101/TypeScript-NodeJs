@@ -1,37 +1,27 @@
 //Delete Doctor
 import { Request, Response } from "express"
 import { adminCntrollStaffService } from "./admin.operate.stuff.services"; 
+import { catchAsync } from "../../../utility/cathcAsync";
+import httpStatus from 'http-status'
+import { StaffServices } from "../../Staff/staff.service";
+import sendResponse from "../../../utility/sendResponse";
 
-export const deleteStaff = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const {id} = req.params;
-        const findStaffAndDelete = await adminCntrollStaffService.deleteStaffFromDB(id);
-        if(!findStaffAndDelete) {
-            return res.status(400).json({
-                success: false,
-                message: "Staff Not Deleted"
-            })
-        }
-
-        const findStaffUserDelete = await adminCntrollStaffService.deleteStaffUserFromDB(findStaffAndDelete.user._id.toString());
-        if(!findStaffUserDelete) {
-            return res.status(400).json({
-                success: false,
-                message: "Staff user Not Deleted"
-            })
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Staff Deleted"
-        })
-
-        
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Something went wrong",
-            err: error
-        })
+export const deleteStaff = catchAsync(
+    async (req: Request, res: Response): Promise<any> => {
+      const { id } = req.params;
+      const findOneStaff = await StaffServices.getOneStaffFromDB(id);
+      const findStaffAndDelete =
+        await adminCntrollStaffService.deleteStaffFromDB(id);
+  
+      await adminCntrollStaffService.deleteStaffUserFromDB(
+        findOneStaff?.user._id.toString() as string
+      );
+  
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "One Patient Deleted Successfully",
+        data: findStaffAndDelete,
+      });
     }
-} 
+  );

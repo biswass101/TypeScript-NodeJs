@@ -1,42 +1,27 @@
 //Delete Doctor
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { adminCntrollDoctorService } from "./admin.operate.doctor.services";
+import { DoctorServices } from "../../Doctor/doctor.service";
+import sendResponse from "../../../utility/sendResponse";
+import httpStatus from "http-status";
+import { catchAsync } from "../../../utility/cathcAsync";
 
-export const deleteDoctor = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
-  try {
+export const deleteDoctor: RequestHandler = catchAsync(
+  async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
+    const findOneDoctor = await DoctorServices.getOneDoctorFromDB(id);
     const findDoctorAndDelete =
       await adminCntrollDoctorService.deleteDoctorFromDB(id);
-    if (!findDoctorAndDelete) {
-      return res.status(400).json({
-        success: false,
-        message: "Doctor Not Deleted",
-      });
-    }
 
-    const findDoctorUserDelete =
-      await adminCntrollDoctorService.deleteDoctorUserFromDB(
-        findDoctorAndDelete.user._id.toString()
-      );
-    if (!findDoctorUserDelete) {
-      return res.status(400).json({
-        success: false,
-        message: "Doctor user Not Deleted",
-      });
-    }
+    await adminCntrollDoctorService.deleteDoctorUserFromDB(
+      findOneDoctor?.user._id.toString() as string
+    );
 
-    return res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: "Doctor Deleted",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      err: error,
+      message: "One Doctor Deleted Successfully",
+      data: findDoctorAndDelete,
     });
   }
-};
+);
