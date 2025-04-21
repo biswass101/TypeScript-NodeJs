@@ -1,137 +1,77 @@
-import { IUser } from "../User/user.interface";
+import { catchAsync } from "../../utility/cathcAsync";
+import sendResponse from "../../utility/sendResponse";
 import { UserServices } from "../User/user.service";
-import { Staff } from "./staff.model";
 import { StaffServices } from "./staff.service";
-import { Request, Response } from "express";
-
-//read
-const getAllStaff = async (req: Request, res: Response) => {
-  try {
-    const result = await StaffServices.getAllStaffFromDB();
-    if (!result.length) {
-      res.status(404).json({
-        success: "false",
-        message: "Staffs Not Found!",
-      });
-    } else {
-      res.status(200).json({
-        success: "true",
-        message: "Staffs Found!",
-        data: result,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: "false",
-      message: "Internal Server Error!",
-    });
-  }
-};
+import { Request, RequestHandler, Response } from "express";
+import httpStatus from 'http-status';
 
 //create
-const createStaff = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const { name, email, password, image, contactInfo } = req.body;
-    const isStaffExists = await StaffServices.getStaffByEmail(email);
-    if (isStaffExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Staff Already Exists",
-      });
-    }
-
-    const newUser: IUser = {
-      name,
-      email,
-      password,
-      image,
-      role: "Staff",
-      status: "in-progress",
-      isDeleted: false,
-      roleModel: "Staff",
-    };
-
-    const isUserExists = await UserServices.getUserByEmail(email);
-
-    if (isUserExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Staff Already Exists",
-      });
-    }
-
-    const savedUser = await UserServices.createUserToDB(newUser);
-
-    if (!savedUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User Not saved!",
-      });
-    }
-
-    const newStaff = {
-      user: savedUser._id,
-      contactInfo,
-    };
-    const staff = await StaffServices.addStaffToDB(newStaff);
-    if (!staff) {
-      res.status(400).json({
-        success: false,
-        message: "Staff info not saved!",
-      });
-    } else {
-      res.status(201).json({
-        success: true,
-        message: "Staff info saved!",
-        data: staff,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
-    });
+const createStaff:RequestHandler = catchAsync(
+  async (req: Request, res: Response): Promise<any> => {
+    req.body.role = "Staff"
+    //saved to master collection
+    const savedUser = await UserServices.createUserToDB(req);
+    //saved to staff collection
+    const savedStaff = await StaffServices.createStaffToDB(req, savedUser._id);
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "One Staff Created Successfully",
+      data: savedStaff
+    })
   }
-};
+);
+
+//read
+const getAllStaff: RequestHandler = catchAsync(
+  async(req: Request, res: Response) => {
+    const result = await StaffServices.getAllStaffFromDB();
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Staffs retrieved Successfully",
+      data: result
+    })
+})
+
+const getOneStaff: RequestHandler = catchAsync(
+  async(req: Request, res: Response) => {
+    const {id} = req.params
+    const result = await StaffServices.getOneStaffFromDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One Staff retrieved Successfully",
+      data: result
+    })
+  }
+)
+
 
 //Update
-const updateStaff = async(req: Request, res:Response): Promise<any> => {
-  try {
+const updateStaff:RequestHandler = catchAsync(
+  async(req: Request, res:Response): Promise<any> => {
     const {id} = req.params;
-    const isStaffAvailable = await Staff.findById(id);
-    if(!isStaffAvailable) {
-      return res.status(404).json({
-        success: false,
-        message: "Staff Not Found!",
-      });
-    }
-
-    const newUpdatedStaff = await StaffServices.updateStaffToDB(id, req.body);
-    if(!newUpdatedStaff) {
-      return res.status(400).json({
-        success: false,
-        message: "Staff Not Updated!",
-      });
-    }
-
-    //todo: master user update
-    // const newDoctorUserUpdate = await
-
-    res.status(200).json({
+    const updatedStaff = await StaffServices.updateStaffToDB(
+      id, 
+      {contactInfo: req.body.contactInfo}
+    )
+    if(req.body.contactInfo) delete req.body.contactInfo;
+    const findStaff = await StaffServices.getOneStaffFromDB(id);
+    await UserServices.updateOneUserToDB(findStaff?.user._id.toString() as string, req.body)
+    
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: "Staff Updated!",
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
-    });
-  }
+      message: "One Staff Updated Successfully",
+      data: updatedStaff
+    })
 }
+)
 
 export const StaffController = {
-  getAllStaff,
   createStaff,
+  getAllStaff,
+  getOneStaff,
   updateStaff
 };

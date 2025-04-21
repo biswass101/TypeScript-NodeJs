@@ -1,141 +1,90 @@
-import { IUser } from "../../User/user.interface";
+import { catchAsync } from "../../../utility/cathcAsync";
+import sendResponse from "../../../utility/sendResponse";
+import httpStatus from 'http-status'
 import { UserServices } from "../../User/user.service";
 import { deleteDoctor } from "../OperateDoctor/admin.controll.doctor";
 import { deletePatient } from "../OperatePatients/admin.controll.patients";
 import { deleteStaff } from "../OperateStuff/admin.controll.stuff";
 import { Admin } from "./admin.model";
 import { AdminServices } from "./admin.service";
-import { Request, Response } from "express";
-
-//read
-const getAllAdmin = async (req: Request, res: Response) => {
-  try {
-    const result = await AdminServices.getAllAdminFromDB();
-    if (!result.length) {
-      res.status(404).json({
-        success: "false",
-        message: "Admins Not Found!",
-      });
-    } else {
-      res.status(200).json({
-        success: "true",
-        message: "Admins Found!",
-        data: result,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: "false",
-      message: "Internal Server Error!",
-    });
-  }
-};
+import { Request, RequestHandler, Response } from "express";
 
 //create
-const createAdmin = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const { name, email, password, image, contactInfo, address } = req.body;
-    const isAdminExists = await AdminServices.getAdminByEmail(email);
-    if (isAdminExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Admin Already Exists",
-      });
-    }
-
-    const newUser: IUser = {
-      name,
-      email,
-      password,
-      image,
-      role: "Admin",
-      status: "in-progress",
-      isDeleted: false,
-      roleModel: "Admin",
-    };
-
-    const isUserExists = await UserServices.getUserByEmail(email);
-
-    if (isUserExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Admin Already Exists",
-      });
-    }
-
-    const savedUser = await UserServices.createUserToDB(newUser);
-
-    if (!savedUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User Not saved!",
-      });
-    }
-
-    const newAdmin = {
-      user: savedUser._id,
-      contactInfo,
-      address,
-    };
-    const admin = await AdminServices.addAdminToDB(newAdmin);
-    if (!admin) {
-      res.status(400).json({
-        success: false,
-        message: "Admin info not saved!",
-      });
-    } else {
-      res.status(201).json({
-        success: true,
-        message: "Admin info saved!",
-        data: admin,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
+const createAdmin: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    req.body.role = "Admin";
+    //saved to master collection
+    const savedUser = await UserServices.createUserToDB(req);
+    //saved to Patient collection
+    const savedAdmin = await AdminServices.createAdminToDB(
+      req,
+      savedUser._id
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "One Admin Created Successfully",
+      data: savedAdmin,
     });
   }
-};
+);
+
+//read
+const getAllAdmin:RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await AdminServices.getAllAdminFromDB();
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Admins retrieved Successfully",
+      data: result,
+    });
+  }
+);
+
+const getOneAdmin:RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await AdminServices.getOneAdminFromDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One Admin retrieved Successfully",
+      data: result,
+    });
+  }
+);
 
 //Update
-const updateAdmin = async(req: Request, res:Response): Promise<any> => {
-  try {
-    const {id} = req.params;
-    const isAdminAvailable = await Admin.findById(id);
-    if(!isAdminAvailable) {
-      return res.status(404).json({
-        success: false,
-        message: "Admin Not Found!",
-      });
-    }
-
-    const newUpdatedAdmin = await AdminServices.updateAdminToDB(id, req.body);
-    if(!newUpdatedAdmin) {
-      return res.status(400).json({
-        success: false,
-        message: "Admin Not Updated!",
-      });
-    }
-
-    //todo: master user update
-    // const newDoctorUserUpdate = await
-
-    res.status(200).json({
-      success: true,
-      message: "Admin Updated!",
+const updateAdmin:RequestHandler = catchAsync(
+  async (req: Request, res: Response): Promise<any> => {
+    const { id } = req.params;
+    const updatedAdmin = await AdminServices.updateAdminToDB(id, {
+      address: req.body.address,
+      contactInfo: req.body.contactInfo,
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
+    delete req.body.address;
+    delete req.body.contactInfo;
+
+    const findAdmin = await AdminServices.getOneAdminFromDB(id);
+    await UserServices.updateOneUserToDB(
+      findAdmin?.user._id.toString() as string,
+      req.body
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One Admin Updated Successfully",
+      data: updatedAdmin,
     });
   }
-}
+);
 
 export const AdminController = {
     getAllAdmin,
+    getOneAdmin,
     createAdmin,
     updateAdmin,
     deleteDoctor,

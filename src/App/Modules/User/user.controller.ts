@@ -1,65 +1,67 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
+import httpStatus from 'http-status'
 import { UserServices } from "./user.service";
+import { catchAsync } from "../../utility/cathcAsync";
+import sendResponse from "../../utility/sendResponse";
 
-const getAllUsers = async (req: Request, res: Response) => {
-  try {
+//create
+const createUser: RequestHandler = catchAsync(
+  async(req: Request, res: Response) => {
+    const result = await UserServices.createUserToDB(req);
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "User created successfully",
+      data: result
+    })
+  }
+)
+
+//read
+const getAllUsers: RequestHandler = catchAsync(
+  async(req: Request, res: Response) => {
     const result = await UserServices.getAllUsersFromDB();
-    if (!result.length) {
-      res.status(404).json({
-        success: "false",
-        message: "Users Not Found!",
-      });
-    } else {
-      res.status(200).json({
-        success: "true",
-        message: "Users Found!",
-        data: result
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: "false",
-      message: "Internal Server Error!",
-    });
-  }
-};
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Users retrieved Successfully",
+      data: result
+    })
+})
 
-const createUser = async (req: Request, res: Response) => {
-  try {
-    //checking section
-    const { email } = req.body;
-    const isUserExists = await UserServices.getUserByEmail(email);
-    if (isUserExists) {
-      res.status(404).json({
-        success: false,
-        message: "User Alredy Exists!",
-      });
-    } else {
-      //user creating 
-      const data = await UserServices.createUserToDB(req.body);
-      if (!data) {
-        res.status(400).json({
-          success: false,
-          message: "User Not Created",
-        });
-      } else {
-        res.status(201).json({
-          success: true,
-          mesage: "user  Created successfully!",
-          data,
-        });
-      }
-    }
-    //creating secting
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong!",
-    });
+const getOneUser: RequestHandler = catchAsync(
+  async(req: Request, res: Response) => {
+    const {id} = req.params
+    const result = await UserServices.getOneUserFromDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One User retrieved Successfully",
+      data: result
+    })
   }
-};
+)
+
+//Update
+const updatOneUser: RequestHandler = catchAsync(
+  async(req: Request, res: Response) => {
+    const {id} = req.params;
+    const result = await UserServices.updateOneUserToDB(id, req.body);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One User updated Successfully",
+      data: result
+    })
+  }
+)
+
+
+
 
 export const UserController = {
-  getAllUsers,
   createUser,
+  getAllUsers,
+  getOneUser,
+  updatOneUser
 };

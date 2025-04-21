@@ -20,6 +20,11 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
         required: true,
         enum: ["Male", "Female"]
     },
+    role: {
+        type: String,
+        required: true,
+        enum: ['Doctor']
+    }, 
     contactInfo: {
         type: String,
         required: true

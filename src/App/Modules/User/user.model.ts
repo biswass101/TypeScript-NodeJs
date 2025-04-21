@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: [true, "Email is required"],
+        unique: [true, "User Already Exists"]
     },
     password: {
         type: String,
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema<IUser>({
     role: {
         type: String,
         require: true,
-        enum: ["Admin", "Doctor", "Patients", "Staff"]
+        enum: ["Admin", "Doctor", "Patient", "Staff"]
     },
     status: {
         type: String,

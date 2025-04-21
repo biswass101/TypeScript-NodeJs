@@ -1,7 +1,6 @@
 //Delete Doctor
 import { Request, Response } from "express";
 import { adminCntrollDoctorService } from "./admin.operate.doctor.services";
-import { User } from "../../User/user.model";
 
 export const deleteDoctor = async (
   req: Request,

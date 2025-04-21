@@ -1,138 +1,91 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { DoctorServices } from "./doctor.service";
 import { UserServices } from "../User/user.service";
-import { IUser } from "../User/user.interface";
-import { Doctor } from "./doctor.model";
-
-//read
-const getAllDoctor = async (req: Request, res: Response) => {
-  try {
-    const result = await DoctorServices.getAlldoctorFromDB();
-    if (!result.length) {
-      res.status(404).json({
-        success: "false",
-        message: "Doctors Not Found!",
-      });
-    } else {
-      res.status(200).json({
-        success: "true",
-        message: "Doctors Found!",
-        data: result,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: "false",
-      message: "Internal Server Error!",
-    });
-  }
-};
+import httpStatus from "http-status";
+import { catchAsync } from "../../utility/cathcAsync";
+import sendResponse from "../../utility/sendResponse";
 
 //create
-const createDoctor = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const {name, email, password,
-      image,
-      specialization,
-      availability,
-      gender,
-      contactInfo} = req.body;
-    const isDoctorExists = await DoctorServices.getDoctorByEmail(email);
-    if(isDoctorExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Doctors Already Exists",
-      })
-    }
-    
-    const newUser: IUser = {
-      name, email, password, image, role: "Doctor", status: "in-progress", isDeleted: false, roleModel: "Doctor"
-    }
-
-    const isUserExists = await UserServices.getUserByEmail(email);
-
-    if(isUserExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Doctors Already Exists",
-      })
-    }
-
-    const savedUser = await UserServices.createUserToDB(newUser);
-   
-    if(!savedUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User Not saved!",
-      })
-    }
-
-    const newDoctor = {
-      user: savedUser._id,
-      specialization,
-      availability,
-      gender,
-      contactInfo
-    }
-    const doctor = await DoctorServices.addDoctorToDB(newDoctor);
-    if (!doctor) {
-      res.status(400).json({
-        success: false,
-        message: "Doctors info not saved!",
-      });
-    } else {
-      res.status(201).json({
-        success: true,
-        message: "Doctors info saved!",
-        data: doctor,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
+const createDoctor: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    req.body.role = "Doctor";
+    //saved to master collection
+    const savedUser = await UserServices.createUserToDB(req);
+    //saved to Patient collection
+    const savedDoctor = await DoctorServices.createDoctorToDB(
+      req,
+      savedUser._id
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "One Doctor Created Successfully",
+      data: savedDoctor,
     });
   }
-};
+);
+
+//read
+const getAllDoctor: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await DoctorServices.getAlldoctorFromDB();
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Doctors retrieved Successfully",
+      data: result,
+    });
+  }
+);
+
+const getOneDoctor: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await DoctorServices.getOneDoctorFromDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One Doctor retrieved Successfully",
+      data: result,
+    });
+  }
+);
 
 //Update
-const updateDoctor = async(req: Request, res:Response): Promise<any> => {
-  try {
-    const {id} = req.params;
-    const isDoctorAvailable = await Doctor.findById(id);
-    if(!isDoctorAvailable) {
-      return res.status(404).json({
-        success: false,
-        message: "Doctor Not Found!",
-      });
-    }
-
-    const newUpdatedDoctor = await DoctorServices.updateDoctorToDB(id, req.body);
-    if(!newUpdatedDoctor) {
-      return res.status(400).json({
-        success: false,
-        message: "Doctor Not Updated!",
-      });
-    }
-
-    //todo: master user update
-    // const newDoctorUserUpdate = await
-
-    res.status(200).json({
-      success: true,
-      message: "Doctor Updated!",
+const updateDoctor:RequestHandler =  catchAsync(
+  async (req: Request, res: Response): Promise<any> => {
+    const { id } = req.params;
+    const updatedDoctor = await DoctorServices.updateDoctorToDB(id, {
+      specialization: req.body.specialization,
+      availability: req.body.availability,
+      gender: req.body.gender,
+      contactInfo: req.body.contactInfo,
+      
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error,
+    delete req.body.specialization;
+    delete req.body.gender;
+    delete req.body.contactInfo;
+    delete req.body.availability;
+
+    const findPatinet = await DoctorServices.getOneDoctorFromDB(id);
+    await UserServices.updateOneUserToDB(
+      findPatinet?.user._id.toString() as string,
+      req.body
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "One Doctor Updated Successfully",
+      data: updatedDoctor,
     });
   }
-}
+);
 
 export const DoctorController = {
   getAllDoctor,
+  getOneDoctor,
   createDoctor,
-  updateDoctor
+  updateDoctor,
 };

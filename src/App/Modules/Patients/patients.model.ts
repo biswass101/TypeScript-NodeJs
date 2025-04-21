@@ -15,6 +15,11 @@ const patientsSchema = new mongoose.Schema<IPatients>({
         required: true,
         enum: ["Male", "Female"]
     },
+    role: {
+        type: String,
+        required: true,
+        enum: ['Patient']
+    }, 
     contactInfo: {
         type: String,
         required: true

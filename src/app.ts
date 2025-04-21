@@ -1,6 +1,7 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import router from './App/Routes';
+import { globalErrorHanlder } from './App/Error/globalErrorHandler';
 const app = express();
 
 //middlewares
@@ -22,5 +23,16 @@ app.use((req, res, next) => {
     message: "Route not found",
   });
 });
+
+app.use(globalErrorHanlder);
+
+
+//Gloabl Error Handler
+// app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+//   res.status(error.statusCode).json({
+//     success: false,
+//     message: error.message
+//   })
+// })
 
 export default app;

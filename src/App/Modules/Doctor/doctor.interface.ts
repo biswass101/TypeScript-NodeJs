@@ -4,5 +4,6 @@ export interface IDoctor {
     specialization: string
     availability: boolean
     gender: "Male" | "Female"
+    role: "Doctor"
     contactInfo: string
 }

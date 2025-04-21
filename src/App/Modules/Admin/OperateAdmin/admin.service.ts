@@ -1,25 +1,37 @@
 import { IAdmin } from "./admin.interface";
 import { Admin } from "./admin.model";
+import { Request, Response } from "express";
 
 const getAllAdminFromDB = async () => {
   const result = await Admin.find();
   return result;
 };
 
+const getOneAdminFromDB = async(id: string) => {
+    const result = await Admin.findById(id);
+    return result
+}
+
 const getAdminByEmail = async (email: string) => {
   const result = await Admin.findOne({email: email})
   return result;
 }
 
-const addAdminToDB = async (admin: IAdmin) => {
-  const savedAdmin = (await Admin.create(admin)).save();
+const createAdminToDB = async (req: Request, refId: any) => {
+  const newAdmin: IAdmin = {
+    user: refId,
+    role: req.body.role,
+    address: req.body.address,
+    contactInfo: req.body.contactInfo
+  }
+  const savedAdmin = await Admin.create(newAdmin);
   return savedAdmin;
-};
+}
 
-const updateAdminToDB = async (id: string, newAdmin: IAdmin) => {
+const updateAdminToDB = async (id: string, payload: object) => {
   const updatedAdmin = await Admin.findByIdAndUpdate(
     id,
-    newAdmin,
+    payload,
     {new: true, runValidators: true}
   )
 
@@ -28,7 +40,8 @@ const updateAdminToDB = async (id: string, newAdmin: IAdmin) => {
 
 export const AdminServices = {
     getAllAdminFromDB,
+    getOneAdminFromDB,
     getAdminByEmail,
-    addAdminToDB,
+    createAdminToDB,
     updateAdminToDB
 }

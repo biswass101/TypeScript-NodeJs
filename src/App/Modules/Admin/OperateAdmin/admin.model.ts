@@ -7,6 +7,11 @@ const adminSchema = new mongoose.Schema<IAdmin>({
         ref: 'User',
         required: true
     },
+    role: {
+        type: String,
+        required: true,
+        enum: ['Admin']
+    }, 
     contactInfo: {
         type: String,
         required: true

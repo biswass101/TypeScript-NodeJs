@@ -4,6 +4,7 @@ import { AdminController } from './admin.controller';
 const router = express.Router();
 
 router.get('/', AdminController.getAllAdmin);
+router.get('/:id', AdminController.getOneAdmin);
 router.post('/create-admin', AdminController.createAdmin);
 router.put('/update-admin/:id', AdminController.updateAdmin);
 router.delete('/delete-doctor/:id', AdminController.deleteDoctor);
