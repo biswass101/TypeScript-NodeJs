@@ -10,5 +10,5 @@ const PORT = config_1.config.port;
 (0, databas_1.connectDB)();
 //server
 app_1.default.listen(PORT, () => {
-    console.log(`Server is listening at: http://loclhost:${PORT}`);
+    console.log(`Server is listening at: http://localhost:${PORT}`);
 });
