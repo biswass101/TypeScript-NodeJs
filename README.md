@@ -3,6 +3,7 @@
 This project is a RESTful API for managing a Hospital Management System, developed using Node.js and Express.js.
 
 ## Base URL
+
 ```
 http://localhost:5000/api/v1
 ```
@@ -20,19 +21,65 @@ http://localhost:5000/api/v1
   Get a single user by ID
 
 - **POST** `/users/create-user`  
-  Create a new user  
-  **Body:**
-  ```json
-  {
-    "name": "Meherun Habiba",
-    "email": "mhU@gmail.com",
-    "password": "1234",
+   **Description:**  
+  Creates a new user with the given details. This can be a doctor, patient, staff, or admin based on the `role` and `roleModel` fields.
+
+**Request Body:**
+
+```json
+{
+  "name": "Rakhi Ummun",
+  "email": "mhsfdfgdfU6@gmail.com",
+  "password": "1234",
+  "image": "sample-image3.jpg",
+  "role": "Doctor",
+  "status": "in-progress",
+  "roleModel": "Doctor"
+}
+```
+
+**Response:**
+**Created 201: ✅**
+
+```json
+{
+  "success": true,
+  "message": "User created successfully",
+  "data": {
+    "name": "Rakhi Ummun",
+    "email": "mhsfdfgdfU6@gmail.com",
+    "password": "$2b$10$XgKNTkBPAvnoUuiBvS4yj.Ne2pt0UHGNK.KB8D2i.gCtDHajmroZC",
     "image": "sample-image3.jpg",
-    "role": "Patient",
+    "role": "Doctor",
     "status": "in-progress",
-    "roleModel": "Patient"
+    "isDeleted": false,
+    "roleModel": "Doctor",
+    "_id": "6808c1f8d02f10e37a9c7004",
+    "__v": 0
   }
-  ```
+}
+```
+
+**Conflict 409: 🔥**
+```json
+{
+  "status": "error",
+  "message": "User Already Exists"
+}
+```
+
+**Bad Request or Empty field 400: ❌🚫**
+```json
+{
+  {
+    "success": false,
+    "message": "Bad Rquest",
+    "data": [
+        "Required"
+    ]
+  }
+}
+```
 
 - **PATCH** `/users/update-user/:id`  
   Update an existing user
@@ -50,6 +97,7 @@ http://localhost:5000/api/v1
 - **POST** `/doctors/create-doctor`  
   Create a new doctor  
   **Body:**
+
   ```json
   {
     "name": "Dr. Goni Arabia",
@@ -79,6 +127,7 @@ http://localhost:5000/api/v1
 - **POST** `/patients/create-patient`  
   Create a new patient  
   **Body:**
+
   ```json
   {
     "name": "Evana Akter Sadiya",
@@ -108,6 +157,7 @@ http://localhost:5000/api/v1
 - **POST** `/staffs/create-staff`  
   Create a new staff member  
   **Body:**
+
   ```json
   {
     "name": "Radhika Biswass",
@@ -134,6 +184,7 @@ http://localhost:5000/api/v1
 - **POST** `/admin/create-admin`  
   Create a new admin  
   **Body:**
+
   ```json
   {
     "name": "Adiba Rumana",
@@ -160,6 +211,7 @@ http://localhost:5000/api/v1
 ---
 
 ## Notes
+
 - Ensure MongoDB is running locally and the database is properly connected.
 - Passwords are stored securely using hashing (not shown in sample responses).
 - All endpoints return a `success`, `message`, and `data` field for consistency.
@@ -167,4 +219,5 @@ http://localhost:5000/api/v1
 ---
 
 ## Author
+
 **Hospital Management System API** by Naeem Biswass Niloy

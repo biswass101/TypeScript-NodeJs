@@ -11,6 +11,7 @@ const createDoctor: RequestHandler = catchAsync(
     req.body.role = "Doctor";
     //saved to master collection
     const savedUser = await UserServices.createUserToDB(req);
+    console.log(savedUser);
     //saved to Patient collection
     const savedDoctor = await DoctorServices.createDoctorToDB(
       req,
