@@ -14,13 +14,13 @@ http://localhost:5000/api/v1
 
 ### User
 
-- **GET** `/users`  
+#### **GET** `/users`  
   Get all users
 
-- **GET** `/users/:id`  
+#### **GET** `/users/:id`  
   Get a single user by ID
 
-- **POST** `/users/create-user`  
+#### **POST** `/users/create-user`  
    **Description:**  
   Creates a new user with the given details. This can be a doctor, patient, staff, or admin based on the `role` and `roleModel` fields.
 
