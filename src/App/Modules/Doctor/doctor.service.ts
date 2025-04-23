@@ -1,6 +1,8 @@
+import ApiError from "../../utility/AppError";
 import { IDoctor } from "./doctor.interface";
 import { Doctor } from "./doctor.model";
 import { Request, Response } from "express";
+import httpStatus from 'http-status'
 
 const getAlldoctorFromDB = async () => {
   const result = await Doctor.find();
@@ -9,6 +11,7 @@ const getAlldoctorFromDB = async () => {
 
 const getOneDoctorFromDB = async(id: string) => {
     const result = await Doctor.findById(id);
+    if(!result) throw new ApiError(httpStatus.NOT_FOUND, "Doctor Not Found")
     return result
 }
 
@@ -32,7 +35,7 @@ const createDoctorToDB = async (req: Request, refId: any) => {
 };
 
 const updateDoctorToDB = async (id: string, payload: Object) => {
-  //find
+  
   const updatedDoctor = await Doctor.findByIdAndUpdate(
     id,
     payload,

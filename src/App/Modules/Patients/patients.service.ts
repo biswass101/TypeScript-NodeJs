@@ -1,6 +1,8 @@
+import ApiError from "../../utility/AppError";
 import { IPatients } from "./patients.interface";
 import { Patients } from "./patients.model";
 import { Request, Response } from "express";
+import httpStatus from 'http-status'
 
 //create
 const createPatientToDB = async (req: Request, refId: any) => {
@@ -22,7 +24,8 @@ const getAllPatientFromDB = async () => {
 };
 
 const getOnePatientFromDB = async(id: string) => {
-    const result = await Patients.findById(id)
+    const result = await Patients.findById(id);
+    if(!result) throw new ApiError(httpStatus.NOT_FOUND, "Patient Not Found!");
     return result
 }
 

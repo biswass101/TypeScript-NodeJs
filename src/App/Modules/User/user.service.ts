@@ -38,6 +38,7 @@ const getAllUsersFromDB = async() => {
 
 const getOneUserFromDB = async(id: string) => {
     const result = await User.findById(id, {isDeleted: false});
+    if(!result) throw new ApiError(httpStatus.NOT_FOUND, "User Not Found");
     return result
 }
 
@@ -48,6 +49,8 @@ const getUserByEmail = async(email: string) => {
 
 //update
 const updateOneUserToDB = async(id: string, payload: any) => {
+    const isUserExists = await User.findById(id);
+    if(!isUserExists) throw new ApiError(409, "User Not Found!");
     const result = await User.findByIdAndUpdate(
         id,
         payload,

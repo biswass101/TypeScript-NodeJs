@@ -1,6 +1,8 @@
 import { Request } from "express";
 import { IStaff } from "./staff.interface";
 import { Staff } from "./staff.model";
+import httpStatus from 'http-status'
+import ApiError from "../../utility/AppError";
 
 //create
 const createStaffToDB = async (req: Request, refId: any) => {
@@ -21,6 +23,7 @@ const getAllStaffFromDB = async () => {
 
 const getOneStaffFromDB = async(id: string) => {
     const result = await Staff.findById(id)
+    if(!result) throw new ApiError(httpStatus.NOT_FOUND, "Staff Not Found")
     return result
 }
 
