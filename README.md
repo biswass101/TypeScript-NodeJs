@@ -24,7 +24,7 @@ http://localhost:5000/api/v1
    **Description:**  
   Creates a new user with the given details. This can be a doctor, patient, staff, or admin based on the `role` and `roleModel` fields.
 
-**Request Body:**
+- **Request Body:**
 
 ```json
 {
@@ -38,8 +38,8 @@ http://localhost:5000/api/v1
 }
 ```
 
-**Response:**
-**Created 201: ✅**
+ - **Response:**
+1. Created 201: ✅
 
 ```json
 {
@@ -60,7 +60,7 @@ http://localhost:5000/api/v1
 }
 ```
 
-**Conflict 409: 🔥**
+2. Conflict 409: 🔥
 ```json
 {
   "status": "error",
@@ -68,7 +68,7 @@ http://localhost:5000/api/v1
 }
 ```
 
-**Bad Request or Empty field 400: ❌🚫**
+3. Bad Request or Empty field 400: ❌🚫
 ```json
 {
   {
