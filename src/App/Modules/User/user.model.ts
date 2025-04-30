@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema<IUser>({
     password: {
         type: String,
         required: true,
-        select: 0
+        select: false
     },
     image: {
         type: String,
@@ -22,26 +22,21 @@ const userSchema = new mongoose.Schema<IUser>({
     role: {
         type: String,
         require: true,
-        enum: ["Admin", "Doctor", "Patient", "Staff"]
+        enum: ["admin", "doctor", "patient", "staff"]
     },
     status: {
         type: String,
-        require: true,
-        enum: ['in-progress', 'blocked']
+        enum: ['in-progress', 'blocked'],
+        required: true,
+        default: "in-progress"
     },
     isDeleted: {
         type: Boolean,
-        default: false
-    },
-    roleRef: {
-        type: mongoose.Schema.Types.ObjectId,
-        refPath: 'roleModel'
-    },
-    roleModel: {
-        type: String,
         required: true,
-        enum: ['Admin', 'Doctor', 'Patient', 'Staff']
+        default: false
     }
+}, {
+    timestamps: true
 })
 
 export const User = mongoose.model<IUser>("User", userSchema);

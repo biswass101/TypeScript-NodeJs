@@ -8,15 +8,32 @@ const staffSchema = new mongoose.Schema<IStaff>({
     ref: "User",
     required: true,
   },
-  role: {
+  name: {
     type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  image: String,
+  status: {
+    type: String,
+    enum: ["approved", "rejected"],
     required: true,
-    enum: ['Staff']
+    default: 'approved'
+  },
+  isDeleted: {
+    type: Boolean,
+    required: true,
+    default: false
   },
   contactInfo: {
     type: String,
-    required: true,
+    // required: true,
   },
+}, {
+  timestamps: true
 });
 
 export const Staff = mongoose.model<IStaff>("Staff", staffSchema);

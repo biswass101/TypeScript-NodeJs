@@ -6,23 +6,23 @@ import ApiError from "../../utility/AppError";
 
 //create
 const createStaffToDB = async (req: Request, refId: any) => {
-  const newStaff: IStaff = {
-    user: refId,
-    role: req.body.role,
-    contactInfo: req.body.contactInfo
-  }
-  const savedStaff = await Staff.create(newStaff);
-  return savedStaff;
+  // const newStaff: IStaff = {
+  //   user: refId,
+  //   role: req.body.role,
+  //   contactInfo: req.body.contactInfo
+  // }
+  // const savedStaff = await Staff.create(newStaff);
+  // return savedStaff;
 };
 
 //read
 const getAllStaffFromDB = async () => {
-  const result = await Staff.find()
+  const result = await Staff.find({ isDeleted: false })
   return result;
 };
 
 const getOneStaffFromDB = async(id: string) => {
-    const result = await Staff.findById(id)
+    const result = await Staff.findById(id, { isDeleted: false })
     if(!result) throw new ApiError(httpStatus.NOT_FOUND, "Staff Not Found")
     return result
 }

@@ -1,6 +1,10 @@
-import {Date, Types} from 'mongoose'
+import {Types} from 'mongoose'
 export interface IStaff {
     user: Types.ObjectId
-    role: "Staff"
+    name: string
+    email: string
+    image: string
     contactInfo: string
+    status: "approved" | "rejected"
+    isDeleted: boolean
 }

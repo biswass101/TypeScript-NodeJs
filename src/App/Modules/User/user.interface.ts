@@ -1,14 +1,13 @@
-import { Types } from 'mongoose'
+import USER_ROLE from "../../constants/userRole"
+
 export interface IUser {
     email: string
     password: string
     name: string
     image?: string
-    role: "Admin" | "Doctor" | "Patients" | "Staff"
+    role: "admin" | "doctor" | "patients" | "staff"
     status: 'in-progress' | 'blocked'
     isDeleted: boolean
-
-    //Relation
-    roleRef?: Types.ObjectId
-    roleModel?: "Admin" | "Doctor" | "Patient" | "Staff"
 }
+
+export type TUserRole = keyof typeof USER_ROLE 
