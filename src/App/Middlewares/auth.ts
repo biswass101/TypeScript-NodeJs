@@ -22,7 +22,7 @@ const auth = (...requireRoles: TUserRole[]) => {
             } catch (error) {
                 throw new ApiError(httpStatus.UNAUTHORIZED, "Could not verify token. Unauthorized user")
             }
-            const { userId, role } = decoded;
+            const { userId , role } = decoded as JwtPayload;
             const user = await User.findById(userId);
             if(!user) {
                 throw new ApiError(httpStatus.NOT_FOUND, "User Not Found!");
