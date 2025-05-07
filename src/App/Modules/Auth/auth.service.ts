@@ -78,14 +78,14 @@ const changePassword = async (
     Number(config.soltRound)
   );
 
-  await User.findOneAndUpdate(
+  const result = await User.findOneAndUpdate(
     {
       _id: userData.userId,
       role: userData.role,
     },
     { password: newHashPassword }
   );
-
+  console.log(result);
   return null;
 };
 
@@ -178,10 +178,9 @@ const resetPassword = async (
     throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access!");
 
   const hashNewPassword = await bcrypt.hash(payload?.newPassword, 10);
-  console.log("here");
   await User.findOneAndUpdate(
     {
-      id: decoded.userId,
+      _id: decoded.userId,
       role: decoded.role,
     },
     {

@@ -10,7 +10,6 @@ import { Doctor } from "../Doctor/doctor.model";
 
 //create
 const createUserToDB = async (payload: IUser): Promise<any> => {
-  console.log("here");
   
   const existingUser = await User.findOne({ email: payload.email });
   if (existingUser)
