@@ -3,11 +3,13 @@ import cors from 'cors';
 import router from './App/Routes';
 import { globalErrorHanlder } from './App/Middlewares/globalErrorHandler';
 import notFound from './App/Middlewares/notFound';
+import cookieParser from 'cookie-parser';
 const app = express();
 
 //middlewares
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 
 app.use("/api/v1", router);

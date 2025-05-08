@@ -58,13 +58,6 @@ const changePassword = async (
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User Not Found!");
   }
-  if (user?.isDeleted) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "User is Deleted");
-  }
-  if (user?.status === "blocked") {
-    throw new ApiError(httpStatus.FORBIDDEN, "User is Blocked");
-  }
-
   const isPassowrdMathced = await bcrypt.compare(
     payload.oldPassword,
     user.password
@@ -92,12 +85,12 @@ const changePassword = async (
 const refreshToken = async (token: string) => {
   if (!token) {
     throw new ApiError(
-      httpStatus.UNAUTHORIZED,
+      httpStatus.UNAUTHORIZED,  
       "Token Not Found. Unauthorized user!"
     );
   }
 
-  let decoded = verifyToken(token, config.jwt_access_secret as string);
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   if (!decoded) {
     throw new ApiError(
@@ -121,6 +114,7 @@ const refreshToken = async (token: string) => {
     userId: user._id.toString(),
     role: user.role,
   };
+  
   //generate access token
   const accessToken = createToken(
     jwtPayload,
