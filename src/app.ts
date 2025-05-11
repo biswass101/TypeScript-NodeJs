@@ -6,7 +6,6 @@ import notFound from './App/Middlewares/notFound';
 import cookieParser from 'cookie-parser';
 const app = express();
 
-//middlewares
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
