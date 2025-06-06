@@ -9,7 +9,7 @@ import { Request, Response } from "express";
 import httpStatus from 'http-status' 
 
 const getAllAdminFromDB = async () => {
-  const result = await Admin.find();
+  const result = await Admin.find().populate('user', 'name email role');
   return result;
 };
 
@@ -24,14 +24,8 @@ const getAdminByEmail = async (email: string) => {
   return result;
 }
 
-const createAdminToDB = async (req: Request, refId: any) => {
-  const newAdmin: IAdmin = {
-    user: refId,
-    role: req.body.role,
-    address: req.body.address,
-    contactInfo: req.body.contactInfo
-  }
-  const savedAdmin = await Admin.create(newAdmin);
+const createAdminToDB = async (payload: IAdmin) => {
+  const savedAdmin = await Admin.create(payload);
   return savedAdmin;
 }
 

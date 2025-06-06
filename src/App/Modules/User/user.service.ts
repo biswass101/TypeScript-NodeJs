@@ -5,12 +5,14 @@ import { IUser } from "./user.interface";
 import ApiError from "../../utility/AppError";
 import httpStatus from "http-status";
 import { config } from "../../config/config";
+import { createDataByRole } from "../../utility/userDataCreateManage";
 import { Staff } from "../Staff/staff.model";
 import { Doctor } from "../Doctor/doctor.model";
+import { Admin } from "../Admin/admin.model";
+import { Patients } from "../Patients/patients.model";
 
 //create
 const createUserToDB = async (payload: IUser): Promise<any> => {
-  
   const existingUser = await User.findOne({ email: payload.email });
   if (existingUser)
     throw new ApiError(httpStatus.CONFLICT, "User Already Exists");
@@ -20,7 +22,6 @@ const createUserToDB = async (payload: IUser): Promise<any> => {
   );
   payload.password = hashPassword;
 
-  
   const result = await User.create(payload);
   const userData = {
     name: payload.name,
@@ -28,10 +29,17 @@ const createUserToDB = async (payload: IUser): Promise<any> => {
     user: result._id,
   };
 
+  // createDataByRole(payload, userData);
   if (payload.role === "staff") {
     await Staff.create(userData);
   } else if (payload.role === "doctor") {
     await Doctor.create(userData);
+  } else if (payload.role === "admin") {
+    await Admin.create(userData);
+  } else if (payload.role === "patient") {
+    await Patients.create(userData);
+  } else {
+    throw new Error("NO Role Matched");
   }
 
   return result;

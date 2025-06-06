@@ -1,25 +1,16 @@
 import ApiError from "../../utility/AppError";
 import { IPatients } from "./patients.interface";
 import { Patients } from "./patients.model";
-import { Request, Response } from "express";
 import httpStatus from 'http-status'
 
 //create
-const createPatientToDB = async (req: Request, refId: any) => {
-  const newPatient:IPatients = {
-    user: refId,
-    role: req.body.role,
-    gender: req.body.gender,
-    age: req.body.age,
-    contactInfo: req.body.contactInfo,
-    address: req.body.contactInfo
-  }
-  const savedPatient = await Patients.create(newPatient);
+const createPatientToDB = async (payload: IPatients) => {
+  const savedPatient = await Patients.create(payload);
   return savedPatient;
 };
 
 const getAllPatientFromDB = async () => {
-  const result = await Patients.find()
+  const result = await Patients.find().populate('user', 'name email role');
   return result;
 };
 
@@ -34,9 +25,7 @@ const getPatientByEmail = async (email: string) => {
   return result;
 }
 
-
-
-const updatePatientToDB = async (id: string, payload: Object) => {
+const updatePatientToDB = async (id: string, payload: any) => {
   const updatedPatient = await Patients.findByIdAndUpdate(
     id,
     payload,

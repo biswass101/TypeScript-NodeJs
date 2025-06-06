@@ -8,15 +8,7 @@ import sendResponse from "../../utility/sendResponse";
 //create
 const createDoctor: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    req.body.role = "Doctor";
-    //saved to master collection
-    const savedUser = await UserServices.createUserToDB(req);
-    console.log(savedUser);
-    //saved to Patient collection
-    const savedDoctor = await DoctorServices.createDoctorToDB(
-      req,
-      savedUser._id
-    );
+    const savedDoctor = await DoctorServices.createDoctorToDB(req.body);
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
@@ -56,25 +48,7 @@ const getOneDoctor: RequestHandler = catchAsync(
 const updateDoctor:RequestHandler =  catchAsync(
   async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
-    const updatedDoctor = await DoctorServices.updateDoctorToDB(id, {
-      specialization: req.body.specialization,
-      availability: req.body.availability,
-      gender: req.body.gender,
-      contactInfo: req.body.contactInfo,
-      
-    });
-
-    delete req.body.specialization;
-    delete req.body.gender;
-    delete req.body.contactInfo;
-    delete req.body.availability;
-
-    const findPatinet = await DoctorServices.getOneDoctorFromDB(id);
-    await UserServices.updateOneUserToDB(
-      findPatinet?.user._id.toString() as string,
-      req.body
-    );
-
+    const updatedDoctor = await DoctorServices.updateDoctorToDB(id, req.body);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -84,9 +58,23 @@ const updateDoctor:RequestHandler =  catchAsync(
   }
 );
 
+
+const uploadDoctorImage:RequestHandler =  catchAsync(
+  async (req: Request, res: Response): Promise<any> => {
+    const result = await DoctorServices.uploadDoctorImageToDB(req.user, req.file);
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "File Uploaded",
+      data: result,
+    });
+  }
+);
+
 export const DoctorController = {
   getAllDoctor,
   getOneDoctor,
   createDoctor,
   updateDoctor,
+  uploadDoctorImage
 };

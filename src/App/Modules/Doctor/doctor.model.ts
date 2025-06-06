@@ -7,28 +7,16 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
         ref: 'User',
         required: true
     },
-    specialization: {
-        type: String,
-        required: true
-    },
-    availability: {
-        type: Boolean,
-        required: true
-    },
+    specialization: String,     
+    availability: Boolean,
     gender: {
         type: String,
-        required: true,
-        enum: ["Male", "Female"]
-    },
-    role: {
-        type: String,
-        required: true,
-        enum: ['Doctor']
+        enum: {
+            values: ["male", "female"],
+            message: "Gender must be either 'male' or 'female'",
+        }
     }, 
-    contactInfo: {
-        type: String,
-        required: true
-    }
+    contactInfo: String
 })
 
 export const Doctor = mongoose.model<IDoctor>("Doctor", doctorSchema);

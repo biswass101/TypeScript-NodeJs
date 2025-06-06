@@ -8,11 +8,8 @@ import httpStatus from 'http-status';
 //create
 const createStaff:RequestHandler = catchAsync(
   async (req: Request, res: Response): Promise<any> => {
-    req.body.role = "Staff"
-    //saved to master collection
-    const savedUser = await UserServices.createUserToDB(req);
-    //saved to staff collection
-    const savedStaff = await StaffServices.createStaffToDB(req, savedUser._id);
+
+    const savedStaff = await StaffServices.createStaffToDB(req.body);
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
@@ -54,11 +51,8 @@ const updateStaff:RequestHandler = catchAsync(
     const {id} = req.params;
     const updatedStaff = await StaffServices.updateStaffToDB(
       id, 
-      {contactInfo: req.body.contactInfo}
+      req.body
     )
-    if(req.body.contactInfo) delete req.body.contactInfo;
-    const findStaff = await StaffServices.getOneStaffFromDB(id);
-    await UserServices.updateOneUserToDB(findStaff?.user._id.toString() as string, req.body)
     
     sendResponse(res, {
       statusCode: httpStatus.OK,

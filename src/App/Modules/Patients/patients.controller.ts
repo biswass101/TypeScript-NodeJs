@@ -1,20 +1,14 @@
 import { Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import { PatientServices } from "./patients.service";
-import { UserServices } from "../User/user.service";
 import sendResponse from "../../utility/sendResponse";
 import { catchAsync } from "../../utility/cathcAsync";
 
 //create
 const createPatient: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    req.body.role = "Patient";
-    //saved to master collection
-    const savedUser = await UserServices.createUserToDB(req);
-    //saved to Patient collection
     const savedPatient = await PatientServices.createPatientToDB(
-      req,
-      savedUser._id
+      req.body
     );
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
@@ -55,24 +49,7 @@ const getOnePatient: RequestHandler = catchAsync(
 const updatePatient: RequestHandler = catchAsync(
   async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
-    const updatedPatient = await PatientServices.updatePatientToDB(id, {
-      age: req.body.age,
-      gender: req.body.gender,
-      contactInfo: req.body.contactInfo,
-      address: req.body.address,
-    });
-
-    delete req.body.age;
-    delete req.body.gender;
-    delete req.body.contactInfo;
-    delete req.body.address;
-
-    const findPatinet = await PatientServices.getOnePatientFromDB(id);
-    await UserServices.updateOneUserToDB(
-      findPatinet?.user._id.toString() as string,
-      req.body
-    );
-
+    const updatedPatient = await PatientServices.updatePatientToDB(id, req.body);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,

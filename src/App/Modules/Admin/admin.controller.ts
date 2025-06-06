@@ -1,6 +1,6 @@
 import { catchAsync } from "../../utility/cathcAsync";
 import sendResponse from "../../utility/sendResponse";
-import httpStatus from 'http-status'
+import httpStatus from "http-status";
 import { UserServices } from "../User/user.service";
 import { Request, RequestHandler, Response } from "express";
 import { DoctorServices } from "../Doctor/doctor.service";
@@ -11,14 +11,7 @@ import { AdminServices } from "./admin.service";
 //create
 const createAdmin: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    req.body.role = "Admin";
-    //saved to master collection
-    const savedUser = await UserServices.createUserToDB(req);
-    //saved to Patient collection
-    const savedAdmin = await AdminServices.createAdminToDB(
-      req,
-      savedUser._id
-    );
+    const savedAdmin = await AdminServices.createAdminToDB(req.body);
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
@@ -29,7 +22,7 @@ const createAdmin: RequestHandler = catchAsync(
 );
 
 //read
-const getAllAdmin:RequestHandler = catchAsync(
+const getAllAdmin: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await AdminServices.getAllAdminFromDB();
     sendResponse(res, {
@@ -41,7 +34,7 @@ const getAllAdmin:RequestHandler = catchAsync(
   }
 );
 
-const getOneAdmin:RequestHandler = catchAsync(
+const getOneAdmin: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await AdminServices.getOneAdminFromDB(id);
@@ -55,23 +48,10 @@ const getOneAdmin:RequestHandler = catchAsync(
 );
 
 //Update
-const updateAdmin:RequestHandler = catchAsync(
+const updateAdmin: RequestHandler = catchAsync(
   async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
-    const updatedAdmin = await AdminServices.updateAdminToDB(id, {
-      address: req.body.address,
-      contactInfo: req.body.contactInfo,
-    });
-
-    delete req.body.address;
-    delete req.body.contactInfo;
-
-    const findAdmin = await AdminServices.getOneAdminFromDB(id);
-    await UserServices.updateOneUserToDB(
-      findAdmin?.user._id.toString() as string,
-      req.body
-    );
-
+    const updatedAdmin = await AdminServices.updateAdminToDB(id, req.body);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -86,8 +66,7 @@ export const deleteDoctor: RequestHandler = catchAsync(
   async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     const findOneDoctor = await DoctorServices.getOneDoctorFromDB(id);
-    const findDoctorAndDelete =
-      await AdminServices.deleteDoctorFromDB(id);
+    const findDoctorAndDelete = await AdminServices.deleteDoctorFromDB(id);
 
     await AdminServices.deleteDoctorUserFromDB(
       findOneDoctor?.user._id.toString() as string
@@ -107,8 +86,7 @@ export const deletePatient = catchAsync(
   async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     const findOnePatient = await PatientServices.getOnePatientFromDB(id);
-    const findPatientAndDelete =
-      await AdminServices.deletePatientFromDB(id);
+    const findPatientAndDelete = await AdminServices.deletePatientFromDB(id);
 
     await AdminServices.deletePatientUserFromDB(
       findOnePatient?.user._id.toString() as string
@@ -128,8 +106,7 @@ export const deleteStaff = catchAsync(
   async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     const findOneStaff = await StaffServices.getOneStaffFromDB(id);
-    const findStaffAndDelete =
-      await AdminServices.deleteStaffFromDB(id);
+    const findStaffAndDelete = await AdminServices.deleteStaffFromDB(id);
 
     await AdminServices.deleteStaffUserFromDB(
       findOneStaff?.user._id.toString() as string
@@ -145,12 +122,11 @@ export const deleteStaff = catchAsync(
 );
 
 export const AdminController = {
-    getAllAdmin,
-    getOneAdmin,
-    createAdmin,
-    updateAdmin,
-    deleteDoctor,
-    deletePatient,
-    deleteStaff
+  getAllAdmin,
+  getOneAdmin,
+  createAdmin,
+  updateAdmin,
+  deleteDoctor,
+  deletePatient,
+  deleteStaff,
 };
-  

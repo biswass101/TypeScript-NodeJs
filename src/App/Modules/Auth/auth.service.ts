@@ -162,12 +162,12 @@ const resetPassword = async (
   if (user.status == "blocked")
     throw new ApiError(httpStatus.NOT_FOUND, "User is blocked");
   
-
+ 
   const decoded = verifyToken(
     token,
     config.jwt_access_secret as string
   ) as JwtPayload;
-
+ console.log("here")
   if (payload.id !== decoded.userId)
     throw new ApiError(httpStatus.FORBIDDEN, "Forbidden Access!");
 

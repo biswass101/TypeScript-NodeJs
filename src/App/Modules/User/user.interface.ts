@@ -5,7 +5,7 @@ export interface IUser {
     password: string
     name: string
     image?: string
-    role: "admin" | "doctor" | "patients" | "staff"
+    role: "admin" | "doctor" | "patient" | "staff"
     status: 'in-progress' | 'blocked'
     isDeleted: boolean
 }

@@ -1,23 +1,17 @@
-import { Request } from "express";
 import { IStaff } from "./staff.interface";
 import { Staff } from "./staff.model";
 import httpStatus from 'http-status'
 import ApiError from "../../utility/AppError";
 
 //create
-const createStaffToDB = async (req: Request, refId: any) => {
-  // const newStaff: IStaff = {
-  //   user: refId,
-  //   role: req.body.role,
-  //   contactInfo: req.body.contactInfo
-  // }
-  // const savedStaff = await Staff.create(newStaff);
-  // return savedStaff;
+const createStaffToDB = async (payload: IStaff) => {
+  const savedStaff = await Staff.create(payload);
+  return savedStaff;
 };
 
 //read
 const getAllStaffFromDB = async () => {
-  const result = await Staff.find({ isDeleted: false })
+  const result = await Staff.find().populate('user', 'name role email')
   return result;
 };
 
